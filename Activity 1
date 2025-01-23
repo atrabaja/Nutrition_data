@@ -1,0 +1,29 @@
+# Import libraries
+import pandas as pd
+
+# Input csv file
+df = pd.read_csv("/mnt/data/nutrition_data.csv")
+
+# Examine the dataset for missing data
+missing_data_summary = df.isnull().sum()
+
+# Display the missing data summary
+print("Missing Data Summary:\n", missing_data_summary)
+
+# Decide how to handle missing data:
+# Fill missing values with appropriate replacements (e.g., mean, median) or drop rows/columns.
+
+# Example: Fill missing numeric values with the mean of each column
+df['calories'] = df['calories'].fillna(df['calories'].mean())
+df['protein'] = df['protein'].fillna(df['protein'].mean())
+df['carbs'] = df['carbs'].fillna(df['carbs'].mean())
+df['fats'] = df['fats'].fillna(df['fats'].mean())
+
+# Fill missing categorical values (e.g., meal_time) with the mode
+df['meal_time'] = df['meal_time'].fillna(df['meal_time'].mode()[0])
+
+# Confirm there are no missing values remaining
+final_missing_data_summary = df.isnull().sum()
+
+# Output the results
+print("\nFinal Missing Data Summary:\n", final_missing_data_summary)
