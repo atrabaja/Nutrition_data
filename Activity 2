@@ -1,0 +1,26 @@
+# Import libraries
+import pandas as pd
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+import numpy as np
+
+# Load the preprocessed dataset (assumes missing data has been handled)
+df = pd.read_csv("/mnt/data/nutrition_data.csv")
+
+# Step 1: Convert categorical features to numerical format
+# Using One-Hot Encoding for the 'meal_time' column
+encoder = OneHotEncoder(sparse=False)
+meal_time_encoded = encoder.fit_transform(df[['meal_time']])
+meal_time_encoded_df = pd.DataFrame(meal_time_encoded, columns=encoder.get_feature_names_out(['meal_time']))
+df = pd.concat([df, meal_time_encoded_df], axis=1).drop('meal_time', axis=1)
+
+# Step 2: Engineer new features
+# Create a feature for "calorie_density" = calories / (protein + carbs + fats)
+df['calorie_density'] = df['calories'] / (df['protein'] + df['carbs'] + df['fats']).replace(0, np.nan)
+
+# Step 3: Apply normalization or standardization
+scaler = StandardScaler()
+numerical_columns = ['calories', 'protein', 'carbs', 'fats', 'calorie_density']
+df[numerical_columns] = scaler.fit_transform(df[numerical_columns])
+
+# Display the final dataset
+print("Transformed Dataset:\n", df.head())
